@@ -1,1 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MyNatureCheck • Nearby Nature Map</title>
+  <meta name="description" content="MyNatureCheck demo: embedded Google Map centered on local nature locations." />
+  <style>
+    :root{
+      --green: #4CAF50;        /* Forest Green */
+      --yellow: #FFA726;       /* Updated yellowish-orange */
+      --blue: #29B6F6;         /* Sky Blue */
+      --moss: #81C784;         /* Moss Green */
+      --charcoal: #424242;     /* Charcoal Gray */
+      --bg: #FFFFFF;           /* Soft White */
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; background: var(--bg); color: var(--charcoal); font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; }
+    header {
+      display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+      background: linear-gradient(90deg, var(--green), var(--moss));
+      color: white; position: sticky; top: 0; z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    header .leaf {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: white; color: var(--green); display: grid; place-items: center;
+      font-weight: 700;
+    }
+    header h1 { font-size: 18px; margin: 0; letter-spacing: 0.3px; }
+    .sub { font-size: 12px; opacity: 0.9; }
+    .panel {
+      padding: 10px 16px; display: grid; gap: 10px; grid-template-columns: 1fr; border-bottom: 1px solid rgba(0,0,0,0.06);
+      background: #f8fbf8;
+    }
+    .controls {
+      display: grid; gap: 10px;
+    }
+    .row { display: grid; gap: 8px; grid-template-columns: 1fr 120px; }
+    label { font-size: 13px; color: #2f2f2f; }
+    input[type="text"] {
+      padding: 10px 12px; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; font-size: 14px;
+    }
+    button, select {
+      appearance: none; -webkit-appearance: none;
+      padding: 10px 12px; border: none; border-radius: 10px; cursor: pointer;
+      background: var(--yellow); color: #1a1a1a; font-weight: 600; font-size: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    select {
+      background: var(--bg); border: 1px solid rgba(0,0,0,0.15);
+      color: var(--charcoal); font-weight: 500;
+    }
+    .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(0,0,0,0.15); background: white; cursor: pointer; font-size: 13px; }
+    .chip:hover { background: #f2f8f2; }
+    .map-wrap { position: relative; width: 100%; height: calc(100% - 172px); }
+    iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    footer {
+      position: fixed; right: 10px; bottom: 10px; background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; padding: 8px 10px; font-size: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .hint { font-size: 12px; color: #5b5b5b; }
+    @media (min-width: 720px){
+      .panel { grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 14px; }
+      .controls { gap: 8px; }
+      .map-wrap { height: calc(100% - 130px); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="leaf">🌿</div>
+    <div>
+      <h1>MyNatureCheck • Nearby Nature Map</h1>
+      <div class="sub">Centered at 37.8977, -122.2452 • Toggle views or search for parks & trails</div>
+    </div>
+  </header>
 
+  <section class="panel">
+    <!-- Controls -->
+    <div class="controls">
+      <label for="maptype">Map type</label>
+      <div class="row">
+        <select id="maptype">
+          <option value="terrain" selected>Terrain</option>
+          <option value="roadmap">Roadmap</option>
+          <option value="satellite">Satellite</option>
+        </select>
+        <button id="btnDefault">Default View</button>
+      </div>
+      <div class="hint">Default view recenters the map on the demo coordinates.</div>
+    </div>
+
+    <div class="controls">
+      <label for="query">Quick search (e.g., "parks near me", "trails", "nature reserve")</label>
+      <div class="row">
+        <input id="query" type="text" placeholder="parks near me" />
+        <button id="btnSearch">Search</button>
+      </div>
+      <div class="buttons">
+        <span class="chip" data-q="parks near me">Parks</span>
+        <span class="chip" data-q="trails near me">Trails</span>
+        <span class="chip" data-q="nature reserve">Nature Reserves</span>
+        <span class="chip" data-q="botanical garden">Botanical Gardens</span>
+      </div>
+      <div class="hint">Tip: You can embed this page in Figma using an iframe embed plugin.</div>
+    </div>
+
+    <div class="controls">
+      <label>API key status</label>
+      <div class="hint">Remember to set referrer restrictions to <code>https://USERNAME.github.io/*</code> in Google Cloud.</div>
+      <button id="btnKeyHelp" title="Opens Google Cloud instructions">Key help</button>
+    </div>
+  </section>
+
+  <div class="map-wrap">
+    <!--
+      IMPORTANT:
+      1) Replace YOUR_API_KEY with your restricted Google Maps API key.
+      2) This page uses Maps Embed API: https://developers.google.com/maps/documentation/embed/overview
+      3) Allowed referrers should include your GitHub Pages origin, e.g. https://your-username.github.io/*
+    -->
+    <iframe id="mapframe"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      src="https://www.google.com/maps/embed/v1/view?key=YOUR_API_KEY&center=37.8977,-122.2452&zoom=12&maptype=terrain">
+    </iframe>
+  </div>
+
+  <footer>
+    © MyNatureCheck • Demo map for prototyping
+  </footer>
+
+  <script>
+    // === CONFIG ===
+    const API_KEY = "YOUR_API_KEY"; // <-- Replace with your restricted Google Maps API key
+    const DEFAULT_CENTER = { lat: 37.8977, lng: -122.2452 };
+    const DEFAULT_ZOOM = 12;
+
+    const $frame = document.getElementById('mapframe');
+    const $maptype = document.getElementById('maptype');
+    const $btnDefault = document.getElementById('btnDefault');
+    const $btnSearch = document.getElementById('btnSearch');
+    const $query = document.getElementById('query');
+    const $chips = document.querySelectorAll('.chip');
+    const $keyHelp = document.getElementById('btnKeyHelp');
+
+    function setView(maptype = 'terrain'){
+      const url = new URL('https://www.google.com/maps/embed/v1/view');
+      url.searchParams.set('key', API_KEY);
+      url.searchParams.set('center', `${DEFAULT_CENTER.lat},${DEFAULT_CENTER.lng}`);
+      url.searchParams.set('zoom', DEFAULT_ZOOM);
+      url.searchParams.set('maptype', maptype);
+      $frame.src = url.toString();
+    }
+
+    function setSearch(query){
+      const url = new URL('https://www.google.com/maps/embed/v1/search');
+      url.searchParams.set('key', API_KEY);
+      url.searchParams.set('q', query);
+      // Optional: bias to default center using 'center' and 'zoom'
+      url.searchParams.set('center', `${DEFAULT_CENTER.lat},${DEFAULT_CENTER.lng}`);
+      url.searchParams.set('zoom', DEFAULT_ZOOM);
+      $frame.src = url.toString();
+    }
+
+    // Init with default view
+    setView($maptype.value);
+
+    // Events
+    $maptype.addEventListener('change', () => setView($maptype.value));
+    $btnDefault.addEventListener('click', () => setView($maptype.value));
+    $btnSearch.addEventListener('click', () => {
+      const q = ($query.value || '').trim();
+      if(q) setSearch(q);
+    });
+    $chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const q = chip.getAttribute('data-q');
+        $query.value = q;
+        setSearch(q);
+      });
+    });
+    $keyHelp.addEventListener('click', () => {
+      window.open('https://console.cloud.google.com/apis/credentials', '_blank');
+    });
+  </script>
+</body>
+</html>
