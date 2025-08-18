@@ -24,7 +24,7 @@
       const queryInput = document.getElementById("query");
       const chips = document.querySelectorAll(".chip");
 
-      function setView(maptype = "terrain") {
+      function setView(maptype = "roadmap") {
         const url = new URL("https://www.google.com/maps/embed/v1/view");
         url.searchParams.set("key", API_KEY);
         url.searchParams.set("center", `${DEFAULT_CENTER.lat},${DEFAULT_CENTER.lng}`);
@@ -44,7 +44,7 @@
       }
 
       // Initialize default view
-      setView("terrain");
+      setView("roadmap");
 
       // Change map type
       mapTypeSelect.addEventListener("change", () => {
@@ -85,9 +85,9 @@
     <div class="controls">
       <label for="maptype">Map type</label>
       <select id="maptype">
-        <option value="terrain">Terrain</option>
         <option value="roadmap">Roadmap</option>
         <option value="satellite">Satellite</option>
+        <option value="hybrid">Hybrid</option>
       </select>
     </div>
     <div class="controls">
