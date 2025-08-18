@@ -1,0 +1,228 @@
+/* Base color palette inspired by biophilic design */
+:root {
+  --green: #4CAF50;
+  --yellow: #FFA726;
+  --blue: #29B6F6;
+  --moss: #81C784;
+  --charcoal: #424242;
+  --bg: #FFFFFF;
+}
+
+* { box-sizing: border-box; }
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--charcoal);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: linear-gradient(90deg, var(--green), var(--moss));
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+header .leaf {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--green);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+header h1 {
+  font-size: 18px;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+.sub {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+/* Control panel */
+.panel {
+  padding: 10px 16px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  background: #f8fbf8;
+}
+.controls {
+  display: grid;
+  gap: 8px;
+}
+.row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr auto;
+}
+label {
+  font-size: 13px;
+  color: #2f2f2f;
+}
+input[type="text"] {
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  font-size: 14px;
+}
+button,
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--yellow);
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+select {
+  background: var(--bg);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  color: var(--charcoal);
+  font-weight: 500;
+}
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  user-select: none;
+}
+.chip:hover {
+  background: #f2f8f2;
+}
+.map-wrap {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 200px);
+}
+iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+footer {
+  padding: 8px 10px;
+  text-align: center;
+  font-size: 12px;
+  color: #5b5b5b;
+}
+.hint {
+  font-size: 12px;
+  color: #5b5b5b;
+}
+@media (min-width: 720px) {
+  .panel {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: end;
+    gap: 14px;
+  }
+  .controls:last-of-type {
+    grid-column: span 3;
+  }
+  .map-wrap {
+    height: calc(100% - 150px);
+  }
+}
+
+/* Chatbot styles */
+.chat-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--blue);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 100;
+}
+.chat-container {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 260px;
+  max-height: 360px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+}
+.hidden {
+  display: none !important;
+}
+.chat-messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 13px;
+}
+.chat-message {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.chat-message.user {
+  text-align: right;
+  color: var(--blue);
+}
+.chat-message.bot {
+  text-align: left;
+  color: var(--green);
+}
+.chat-form {
+  display: flex;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.chat-form input {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+}
+.chat-form button {
+  padding: 8px 12px;
+  background: var(--blue);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
